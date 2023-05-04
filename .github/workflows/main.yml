@@ -1,0 +1,83 @@
+import pygame
+
+# initialize Pygame
+pygame.init()
+
+# set up the screen
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Futuristic Pong")
+
+# set up the game objects
+ball_size = 20
+ball_x = screen_width // 2
+ball_y = screen_height // 2
+ball_speed_x = 5
+ball_speed_y = 5
+
+paddle_width = 20
+paddle_height = 100
+paddle_speed = 5
+left_paddle_x = 50
+left_paddle_y = screen_height // 2 - paddle_height // 2
+right_paddle_x = screen_width - 50 - paddle_width
+right_paddle_y = screen_height // 2 - paddle_height // 2
+
+# set up the game loop
+clock = pygame.time.Clock()
+running = True
+
+while running:
+    # handle events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # update the game objects
+    ball_x += ball_speed_x
+    ball_y += ball_speed_y
+
+    # handle collisions with walls
+    if ball_y < 0 or ball_y + ball_size > screen_height:
+        ball_speed_y *= -1
+    if ball_x < 0:
+        ball_speed_x *= -1
+        ball_x = screen_width // 2
+        ball_y = screen_height // 2
+    if ball_x + ball_size > screen_width:
+        ball_speed_x *= -1
+        ball_x = screen_width // 2
+        ball_y = screen_height // 2
+
+    # handle collisions with paddles
+    if ball_x < left_paddle_x + paddle_width and ball_y + ball_size > left_paddle_y and ball_y < left_paddle_y + paddle_height:
+        ball_speed_x *= -1
+    if ball_x + ball_size > right_paddle_x and ball_y + ball_size > right_paddle_y and ball_y < right_paddle_y + paddle_height:
+        ball_speed_x *= -1
+
+    # handle paddle movement
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_w] and left_paddle_y > 0:
+        left_paddle_y -= paddle_speed
+    if keys[pygame.K_s] and left_paddle_y + paddle_height < screen_height:
+        left_paddle_y += paddle_speed
+    if keys[pygame.K_UP] and right_paddle_y > 0:
+        right_paddle_y -= paddle_speed
+    if keys[pygame.K_DOWN] and right_paddle_y + paddle_height < screen_height:
+        right_paddle_y += paddle_speed
+
+    # draw the game objects
+    screen.fill((0, 0, 0))
+    pygame.draw.rect(screen, (255, 255, 255), (ball_x, ball_y, ball_size, ball_size))
+    pygame.draw.rect(screen, (255, 255, 255), (left_paddle_x, left_paddle_y, paddle_width, paddle_height))
+    pygame.draw.rect(screen, (255, 255, 255), (right_paddle_x, right_paddle_y, paddle_width, paddle_height))
+
+    # update the screen
+    pygame.display.update()
+
+    # set the frame rate
+    clock.tick(60)
+
+# quit Pygame
+pygame.quit()
